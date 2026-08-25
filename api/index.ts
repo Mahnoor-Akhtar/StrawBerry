@@ -1,21 +1,55 @@
-export const config = {
-  runtime: "edge",
-};
+import type { VercelRequest, VercelResponse } from "@vercel/node";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-export default async function handler(request: Request) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // Dynamically import the compiled TanStack Start server handler from dist/server
-    // @ts-expect-error - dist/server output is generated dynamically during build
-    const serverModule = await import("../dist/server/index.js");
+    const serverPath = path.resolve(process.cwd(), "dist/server/index.js");
+    const serverUrl = pathToFileURL(serverPath).href;
+    const serverModule = await import(serverUrl);
     const handleRequest =
       serverModule.default || serverModule.createServerEntry;
 
-    if (typeof handleRequest === "function") {
-      return await handleRequest(request);
+    if (typeof handleRequest !== "function") {
+      res
+        .status(500)
+        .send("SSR Handler function not found in dist/server/index.js");
+      return;
     }
-    return new Response("SSR Handler Not Found", { status: 500 });
+
+    const protocol = (req.headers["x-forwarded-proto"] as string) || "https";
+    const host =
+      (req.headers["x-forwarded-host"] as string) ||
+      req.headers.host ||
+      "localhost";
+    const fullUrl = `${protocol}://${host}${req.url}`;
+
+    const headers = new Headers();
+    for (const [key, val] of Object.entries(req.headers)) {
+      if (Array.isArray(val)) {
+        for (const item of val) headers.append(key, item);
+      } else if (typeof val === "string") {
+        headers.set(key, val);
+      }
+    }
+
+    const webRequest = new Request(fullUrl, {
+      method: req.method,
+      headers,
+    });
+
+    const webResponse = await handleRequest(webRequest);
+
+    res.status(webResponse.status);
+    webResponse.headers.forEach((value: string, key: string) => {
+      res.setHeader(key, value);
+    });
+
+    const bodyArrayBuffer = await webResponse.arrayBuffer();
+    res.end(Buffer.from(bodyArrayBuffer));
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : String(error);
-    return new Response(`SSR Render Error: ${message}`, { status: 500 });
+    console.error("Vercel SSR Handler Error:", error);
+    res.status(500).send(`SSR Render Error: ${message}`);
   }
 }

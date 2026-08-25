@@ -4,6 +4,11 @@
   "outputDirectory": "dist/client",
   "cleanUrls": true,
   "framework": "vite",
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": "dist/server/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!assets/|images/|.*\\..*).*)",
