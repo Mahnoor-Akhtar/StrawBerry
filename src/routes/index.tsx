@@ -229,6 +229,7 @@ function Index() {
 
       <section
         ref={productsSectionRef}
+        id="best-sellers"
         className="relative z-10 bg-[#f5f0e9] px-4 py-16 text-[#2f1f1d] sm:px-8 sm:py-20"
         aria-label="Strawberry best sellers"
       >
@@ -327,6 +328,57 @@ function Index() {
                 </article>
               );
             })}
+          </div>
+
+          {/* Product Notes, Bundles, and Delivery Feature Cards */}
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            <section
+              id="product-notes"
+              className="rounded-3xl border border-[#eadbca] bg-[#f8f4ed] p-6 shadow-[0_6px_18px_rgba(48,23,22,0.06)]"
+            >
+              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8dbcc] text-[#b04b5b]">
+                📝
+              </div>
+              <h3 className="text-xl font-semibold text-[#301716]">
+                Product Notes
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#6d514d]">
+                Crafted from 100% organic, breathable cotton that is
+                hypoallergenic and ultra-soft on delicate newborn skin.
+              </p>
+            </section>
+
+            <section
+              id="bundles"
+              className="rounded-3xl border border-[#eadbca] bg-[#f8f4ed] p-6 shadow-[0_6px_18px_rgba(48,23,22,0.06)]"
+            >
+              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8dbcc] text-[#b04b5b]">
+                🎁
+              </div>
+              <h3 className="text-xl font-semibold text-[#301716]">
+                Bundles & Savings
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#6d514d]">
+                Save up to 25% when you order our complete Strawberry Nursery &
+                Sleep bundle sets.
+              </p>
+            </section>
+
+            <section
+              id="delivery"
+              className="rounded-3xl border border-[#eadbca] bg-[#f8f4ed] p-6 shadow-[0_6px_18px_rgba(48,23,22,0.06)]"
+            >
+              <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8dbcc] text-[#b04b5b]">
+                🚚
+              </div>
+              <h3 className="text-xl font-semibold text-[#301716]">
+                Fast Express Delivery
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#6d514d]">
+                Free nationwide tracked shipping on orders over Rs 2,000.
+                Express 24-hour dispatch guaranteed.
+              </p>
+            </section>
           </div>
         </div>
       </section>

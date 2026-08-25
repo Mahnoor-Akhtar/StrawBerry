@@ -20,10 +20,10 @@ interface NavbarProps {
 }
 
 const NAV_LINKS = [
-  { label: "Best Sellers", href: "/shop#best-sellers", icon: Sparkles },
-  { label: "Product Notes", href: "/shop#product-notes", icon: FileText },
-  { label: "Bundles", href: "/shop#bundles", icon: Package },
-  { label: "Delivery", href: "/shop#delivery", icon: Truck },
+  { label: "Best Sellers", hash: "best-sellers", icon: Sparkles },
+  { label: "Product Notes", hash: "product-notes", icon: FileText },
+  { label: "Bundles", hash: "bundles", icon: Package },
+  { label: "Delivery", hash: "delivery", icon: Truck },
 ];
 
 export function Navbar({
@@ -66,6 +66,20 @@ export function Navbar({
     onOpenCart?.();
   };
 
+  const handleNavLinkClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    hash: string,
+  ) => {
+    setIsMobileMenuOpen(false);
+
+    // If section exists on the current page, perform smooth scrolling
+    const targetElement = document.getElementById(hash);
+    if (targetElement) {
+      e.preventDefault();
+      targetElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <>
       <header
@@ -97,9 +111,11 @@ export function Navbar({
           {/* Desktop Navigation Links */}
           <div className="hidden items-center gap-7 lg:gap-9 md:flex">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.label}
-                href={link.href}
+                to="/shop"
+                hash={link.hash}
+                onClick={(e) => handleNavLinkClick(e, link.hash)}
                 className={`relative text-xs font-semibold uppercase tracking-[0.08em] transition-colors duration-200 after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 after:rounded-full after:transition-all after:duration-300 hover:after:w-full ${
                   isPastVideo
                     ? "text-[#3d2a28] hover:text-[#c9626d] after:bg-[#c9626d]"
@@ -107,7 +123,7 @@ export function Navbar({
                 }`}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
 
@@ -263,10 +279,11 @@ export function Navbar({
             {NAV_LINKS.map((link) => {
               const Icon = link.icon;
               return (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
-                  onClick={closeMobileMenu}
+                  to="/shop"
+                  hash={link.hash}
+                  onClick={(e) => handleNavLinkClick(e, link.hash)}
                   className="flex items-center justify-between rounded-xl p-3 text-sm font-semibold text-[#301716] transition-colors hover:bg-[#ede3d7] active:bg-[#e4d6c7]"
                 >
                   <div className="flex items-center gap-3">
@@ -276,7 +293,7 @@ export function Navbar({
                     <span>{link.label}</span>
                   </div>
                   <ChevronRight className="h-4 w-4 text-[#9c827c]" />
-                </a>
+                </Link>
               );
             })}
           </nav>
