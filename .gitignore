@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.output
+.vercel
+
+# Local environment & secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Cloudflare / Wrangler local artifacts
+.wrangler
+
+# System & Editor files
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+*.log
