@@ -6,6 +6,7 @@ node_modules
 dist
 .output
 .vercel
+api/server
 
 # Local environment & secrets
 .env

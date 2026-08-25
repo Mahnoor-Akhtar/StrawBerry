@@ -1,10 +1,19 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(
+  req: VercelRequest,
+  res: VercelResponse,
+) {
   try {
-    const serverPath = path.resolve(process.cwd(), "dist/server/index.js");
+    // Try api/server/index.js first, fallback to dist/server/index.js
+    let serverPath = path.resolve(process.cwd(), "api/server/index.js");
+    if (!fs.existsSync(serverPath)) {
+      serverPath = path.resolve(process.cwd(), "dist/server/index.js");
+    }
+
     const serverUrl = pathToFileURL(serverPath).href;
     const serverModule = await import(serverUrl);
     const handleRequest =
@@ -13,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (typeof handleRequest !== "function") {
       res
         .status(500)
-        .send("SSR Handler function not found in dist/server/index.js");
+        .send(`SSR Handler function not found at ${serverPath}`);
       return;
     }
 
