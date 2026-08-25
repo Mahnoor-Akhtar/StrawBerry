@@ -1,18 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/client",
+  "outputDirectory": "dist",
   "cleanUrls": true,
   "framework": "vite",
-  "functions": {
-    "api/index.ts": {
-      "includeFiles": "dist/server/**"
-    }
-  },
   "rewrites": [
     {
-      "source": "/((?!assets/|images/|.*\\..*).*)",
-      "destination": "/api"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
