@@ -1,28 +1,27 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fs from "node:fs";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse,
-) {
+type ServerModule = {
+  default?: (req: Request) => Promise<Response>;
+  createServerEntry?: (req: Request) => Promise<Response>;
+};
+
+// Static relative import so Vercel NFT (Node File Trace) includes api/server in function output
+// @ts-expect-error - api/server/index.js is generated during npm run build
+import serverModuleImport from "./server/index.js";
+
+const serverModule = serverModuleImport as ServerModule | undefined;
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // Try api/server/index.js first, fallback to dist/server/index.js
-    let serverPath = path.resolve(process.cwd(), "api/server/index.js");
-    if (!fs.existsSync(serverPath)) {
-      serverPath = path.resolve(process.cwd(), "dist/server/index.js");
-    }
-
-    const serverUrl = pathToFileURL(serverPath).href;
-    const serverModule = await import(serverUrl);
     const handleRequest =
-      serverModule.default || serverModule.createServerEntry;
+      typeof serverModule === "function"
+        ? (serverModule as (req: Request) => Promise<Response>)
+        : serverModule?.default || serverModule?.createServerEntry;
 
     if (typeof handleRequest !== "function") {
       res
         .status(500)
-        .send(`SSR Handler function not found at ${serverPath}`);
+        .send("SSR Handler function not found in api/server/index.js");
       return;
     }
 
